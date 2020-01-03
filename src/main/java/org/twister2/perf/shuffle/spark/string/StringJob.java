@@ -36,7 +36,7 @@ public class StringJob {
 
       @Override
       public int getPartition(Object key) {
-        return Math.abs(key.toString().hashCode()) % parallel;
+        return (int) (Math.abs((long) key.toString().hashCode()) % parallel);
       }
     }).saveAsTextFile(args[0] + "/sparkOut");
     sc.stop();
