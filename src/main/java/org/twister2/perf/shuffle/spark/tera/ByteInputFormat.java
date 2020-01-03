@@ -1,7 +1,7 @@
-package org.twister2.perf.spark.tera;
+package org.twister2.perf.shuffle.spark.tera;
 
 import org.apache.hadoop.mapreduce.*;
-import org.twister2.perf.tws.Context;
+import org.twister2.perf.shuffle.Context;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,8 +13,8 @@ public class ByteInputFormat extends InputFormat<byte[], byte[]> {
   @Override
   public List<InputSplit> getSplits(JobContext jobContext) throws IOException, InterruptedException {
     int parallel = jobContext.getConfiguration().getInt(Context.ARG_PARALLEL, 16);
-    int keySize = jobContext.getConfiguration().getInt(TeraSortJob.ARG_KEY_SIZE, 10);
-    int dataSize = jobContext.getConfiguration().getInt(TeraSortJob.ARG_DATA_SIZE, 90);
+    int keySize = jobContext.getConfiguration().getInt(Context.ARG_KEY_SIZE, 10);
+    int dataSize = jobContext.getConfiguration().getInt(Context.ARG_DATA_SIZE, 90);
     int elements = jobContext.getConfiguration().getInt(Context.ARG_TUPLES, 10000);
 
     LOG.info(String.format("Format configuration parallel %d, key %d, data %d, tuples %d",

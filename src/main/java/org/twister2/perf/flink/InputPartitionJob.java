@@ -1,16 +1,13 @@
 package org.twister2.perf.flink;
 
 import org.apache.flink.api.common.operators.Order;
-import org.apache.flink.api.common.typeinfo.TypeHint;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.ExecutionEnvironment;
-import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.io.CsvReader;
 import org.apache.flink.api.java.operators.DataSource;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.core.fs.FileSystem;
-import org.twister2.perf.tws.Context;
+import org.twister2.perf.shuffle.Context;
 
 import java.math.BigInteger;
 import java.util.logging.Level;

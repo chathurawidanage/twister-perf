@@ -1,28 +1,26 @@
 package org.twister2.perf.io;
 
-import edu.iu.dsc.tws.api.comms.structs.Tuple;
 import edu.iu.dsc.tws.api.config.Config;
 import edu.iu.dsc.tws.api.data.FileSystem;
 import edu.iu.dsc.tws.api.data.Path;
 import edu.iu.dsc.tws.data.utils.FileSystemUtils;
 
 import java.io.*;
-import java.math.BigInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CSVStreamInputReader implements FileReader {
+public abstract class BaseStreamInputReader<K, V> implements FileReader {
   private static final Logger LOG = Logger.getLogger(StreamInputReader.class.getName());
 
   private BufferedReader in;
 
-  private String currentSize;
+  protected String currentSize;
 
   private boolean end = false;
 
   private int count;
 
-  public CSVStreamInputReader(String fileName, Config config) {
+  public BaseStreamInputReader(String fileName, Config config) {
     try {
       FileSystem fs = FileSystemUtils.get(new Path(fileName).toUri(), config);
       this.in = new BufferedReader(new InputStreamReader(fs.open(new Path(fileName))));
@@ -43,10 +41,5 @@ public class CSVStreamInputReader implements FileReader {
       LOG.info("End reached - read tuples - " + count);
     }
     return end;
-  }
-
-  public Tuple<BigInteger, Long> nextRecord() {
-    String[] a = currentSize.split(",");
-    return new Tuple<>(new BigInteger(a[0]), Long.parseLong(a[1]));
   }
 }

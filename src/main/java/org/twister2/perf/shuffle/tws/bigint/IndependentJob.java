@@ -1,4 +1,4 @@
-package org.twister2.perf.tws;
+package org.twister2.perf.shuffle.tws.bigint;
 
 import edu.iu.dsc.tws.api.JobConfig;
 import edu.iu.dsc.tws.api.Twister2Job;
@@ -14,9 +14,9 @@ import edu.iu.dsc.tws.api.util.KryoSerializer;
 import edu.iu.dsc.tws.rsched.core.ResourceAllocator;
 import edu.iu.dsc.tws.rsched.job.Twister2Submitter;
 import edu.iu.dsc.tws.tset.fn.HashingPartitioner;
-import org.twister2.perf.io.CSVStreamInputReader;
 import org.twister2.perf.io.FileReader;
 import org.twister2.perf.io.StreamInputReader;
+import org.twister2.perf.shuffle.Context;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -67,7 +67,7 @@ public class IndependentJob implements IWorker, Serializable {
     if (!csv) {
       reader = new StreamInputReader(prefix + "/data/input-" + workerID, config);
     } else {
-      reader = new CSVStreamInputReader(prefix + "/csvData/input-" + workerID, config);
+      reader = new BigIntReader(prefix + "/csvData/input-" + workerID, config);
     }
     int size = 0;
     try {

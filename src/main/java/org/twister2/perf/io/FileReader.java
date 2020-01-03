@@ -3,9 +3,8 @@ package org.twister2.perf.io;
 import edu.iu.dsc.tws.api.comms.structs.Tuple;
 
 import java.io.IOException;
-import java.math.BigInteger;
 
-public interface FileReader {
+public interface FileReader<K, V> {
   boolean reachedEnd() throws IOException;
-  Tuple<BigInteger, Long> nextRecord();
+  Tuple<K, V> nextRecord();
 }

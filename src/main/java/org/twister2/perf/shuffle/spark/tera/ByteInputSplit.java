@@ -1,4 +1,4 @@
-package org.twister2.perf.spark.tera;
+package org.twister2.perf.shuffle.spark.tera;
 
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputSplit;

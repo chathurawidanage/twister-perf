@@ -1,4 +1,4 @@
-package org.twister2.perf.spark.tera;
+package org.twister2.perf.shuffle.spark.tera;
 
 import java.io.Serializable;
 import java.util.Comparator;

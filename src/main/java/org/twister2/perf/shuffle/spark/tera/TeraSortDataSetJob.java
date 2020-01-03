@@ -1,11 +1,11 @@
-package org.twister2.perf.spark.tera;
+package org.twister2.perf.shuffle.spark.tera;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.*;
-import org.twister2.perf.tws.Context;
+import org.twister2.perf.shuffle.Context;
 
 public class TeraSortDataSetJob {
   public static void main(String[] args) {
@@ -19,8 +19,8 @@ public class TeraSortDataSetJob {
 
     configuration.set(Context.ARG_TUPLES, tuples + "");
     configuration.set(Context.ARG_PARALLEL, args[1]);
-    configuration.set(TeraSortJob.ARG_KEY_SIZE, args[2]);
-    configuration.set(TeraSortJob.ARG_DATA_SIZE, args[3]);
+    configuration.set(Context.ARG_KEY_SIZE, args[2]);
+    configuration.set(Context.ARG_DATA_SIZE, args[3]);
 
     JavaSparkContext sc = new JavaSparkContext(conf);
     JavaPairRDD<byte[], byte[]> input = sc.newAPIHadoopRDD(configuration, ByteInputFormat.class, byte[].class, byte[].class);
