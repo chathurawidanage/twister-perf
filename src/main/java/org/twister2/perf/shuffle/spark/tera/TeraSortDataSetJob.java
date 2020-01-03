@@ -6,6 +6,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.*;
 import org.twister2.perf.shuffle.Context;
+import org.twister2.perf.shuffle.io.BaseInputFormat;
 
 public class TeraSortDataSetJob {
   public static void main(String[] args) {
@@ -23,7 +24,7 @@ public class TeraSortDataSetJob {
     configuration.set(Context.ARG_DATA_SIZE, args[3]);
 
     JavaSparkContext sc = new JavaSparkContext(conf);
-    JavaPairRDD<byte[], byte[]> input = sc.newAPIHadoopRDD(configuration, ByteInputFormat.class, byte[].class, byte[].class);
+    JavaPairRDD<byte[], byte[]> input = sc.newAPIHadoopRDD(configuration, BaseInputFormat.class, byte[].class, byte[].class);
 
     SparkSession spark = SparkSession
         .builder()

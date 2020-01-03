@@ -1,4 +1,4 @@
-package org.twister2.perf.shuffle.spark.tera;
+package org.twister2.perf.shuffle.io;
 
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapreduce.InputSplit;
@@ -8,7 +8,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class ByteInputSplit extends InputSplit implements Writable {
+public class InMemoryInputSplit extends InputSplit implements Writable {
   private int elements = 10000000;
 
   private String node;
@@ -17,19 +17,19 @@ public class ByteInputSplit extends InputSplit implements Writable {
 
   private int dataSize;
 
-  public ByteInputSplit(int elements, int keySize, int dataSize, String node) {
+  public InMemoryInputSplit(int elements, int keySize, int dataSize, String node) {
     this.elements = elements;
     this.keySize = keySize;
     this.dataSize = dataSize;
     this.node = node;
   }
 
-  public ByteInputSplit() {
+  public InMemoryInputSplit() {
   }
 
   @Override
   public long getLength() throws IOException, InterruptedException {
-    return elements * 100;
+    return elements * (keySize + dataSize);
   }
 
   @Override

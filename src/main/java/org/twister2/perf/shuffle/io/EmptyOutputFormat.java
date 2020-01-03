@@ -1,4 +1,4 @@
-package org.twister2.perf.shuffle.spark.bigint;
+package org.twister2.perf.shuffle.io;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.JobConf;
@@ -8,7 +8,7 @@ import org.apache.hadoop.util.Progressable;
 
 import java.io.IOException;
 
-public class ByteOutputFormat<T, V> implements OutputFormat<T, V> {
+public class EmptyOutputFormat<T, V> implements OutputFormat<T, V> {
 
   @Override
   public RecordWriter<T, V> getRecordWriter(FileSystem fileSystem,

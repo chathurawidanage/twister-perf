@@ -1,4 +1,4 @@
-package org.twister2.perf.shuffle.spark.bigint;
+package org.twister2.perf.shuffle.io;
 
 import org.apache.hadoop.mapred.RecordWriter;
 import org.apache.hadoop.mapred.Reporter;

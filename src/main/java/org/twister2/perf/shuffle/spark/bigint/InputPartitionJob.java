@@ -10,6 +10,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.twister2.perf.shuffle.io.EmptyOutputFormat;
 import scala.Tuple2;
 
 import java.math.BigInteger;
@@ -39,14 +40,14 @@ public class InputPartitionJob {
         if (out) {
           source.saveAsTextFile(args[0] + "/sparkOut2");
         } else {
-          source.saveAsHadoopFile(args[0] + "/sparkOut2", BigInteger.class, Long.class, ByteOutputFormat.class);
+          source.saveAsHadoopFile(args[0] + "/sparkOut2", BigInteger.class, Long.class, EmptyOutputFormat.class);
         }
       } else {
         if (out) {
           source.repartitionAndSortWithinPartitions(new HashPartitioner(parallel)).saveAsTextFile(args[0] + "/sparkOut");
         } else {
           source.repartitionAndSortWithinPartitions(new HashPartitioner(parallel)).saveAsHadoopFile(
-              args[0] + "/sparkOut", BigInteger.class, Long.class, ByteOutputFormat.class);
+              args[0] + "/sparkOut", BigInteger.class, Long.class, EmptyOutputFormat.class);
         }
       }
     } else {

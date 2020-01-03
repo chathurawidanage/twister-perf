@@ -4,7 +4,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.twister2.perf.shuffle.spark.bigint.ByteOutputFormat;
+import org.twister2.perf.shuffle.io.EmptyOutputFormat;
 import org.twister2.perf.shuffle.Context;
 
 public class TeraSortJob {
@@ -30,7 +30,7 @@ public class TeraSortJob {
     JavaPairRDD<byte[], byte[]> sorted = input.repartitionAndSortWithinPartitions(new TeraSortPartitioner(input.partitions().size()), new ByteComparator());
 
     if (writeToFile) {
-      sorted.saveAsHadoopFile("out", byte[].class, byte[].class, ByteOutputFormat.class);
+      sorted.saveAsHadoopFile("out", byte[].class, byte[].class, EmptyOutputFormat.class);
     } else {
       sorted.saveAsTextFile(args[5]);
     }
