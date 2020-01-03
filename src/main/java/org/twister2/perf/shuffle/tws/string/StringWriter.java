@@ -43,7 +43,7 @@ public class StringWriter implements IWorker {
   }
 
   // function to generate a random string of length n
-  private static String getAlphaNumericString(int n) {
+  public static String getAlphaNumericString(int n) {
     // chose a Character random from this String
     String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         + "0123456789"
