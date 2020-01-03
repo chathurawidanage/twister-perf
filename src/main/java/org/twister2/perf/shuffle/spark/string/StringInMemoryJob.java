@@ -13,11 +13,11 @@ public class StringInMemoryJob {
     SparkConf conf = new SparkConf().setAppName("terasort");
     Configuration configuration = new Configuration();
 
-    double size = Double.parseDouble(args[1]);
-    int keySize = Integer.parseInt(args[3]);
-    int dataSize = Integer.parseInt(args[4]);
+    double size = Double.parseDouble(args[0]);
+    int keySize = Integer.parseInt(args[2]);
+    int dataSize = Integer.parseInt(args[3]);
     int tuples = (int) (size * 1024 * 1024 * 1024 / (keySize + dataSize));
-    int parallel = Integer.parseInt(args[2]);
+    int parallel = Integer.parseInt(args[1]);
 
     configuration.set(Context.ARG_TUPLES, tuples + "");
     configuration.set(Context.ARG_PARALLEL, args[1]);
