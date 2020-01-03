@@ -14,9 +14,7 @@ public class StringInMemoryJob {
     Configuration configuration = new Configuration();
 
     double size = Double.parseDouble(args[0]);
-    int keySize = Integer.parseInt(args[2]);
-    int dataSize = Integer.parseInt(args[3]);
-    int tuples = (int) (size * 1024 * 1024 * 1024 / (keySize + dataSize));
+    int tuples = (int) size;
     int parallel = Integer.parseInt(args[1]);
 
     configuration.set(Context.ARG_TUPLES, tuples + "");
