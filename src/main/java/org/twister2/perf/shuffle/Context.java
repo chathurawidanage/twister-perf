@@ -1,4 +1,4 @@
-package org.twister2.perf.tws;
+package org.twister2.perf.shuffle;
 
 public final class Context {
   public static final String ARG_PARALLEL = "parallel";
@@ -7,4 +7,6 @@ public final class Context {
   public static final String ARG_CSV = "csv";
   public static final String ARG_TUPLES = "tuples";
   public static final String ARG_WRITE = "write";
+  public static final String ARG_KEY_SIZE = "keySize";
+  public static final String ARG_DATA_SIZE = "dataSize";
 }

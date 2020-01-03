@@ -1,0 +1,58 @@
+package org.twister2.perf.shuffle.tws;
+
+import edu.iu.dsc.tws.api.JobConfig;
+import edu.iu.dsc.tws.api.Twister2Job;
+import edu.iu.dsc.tws.api.config.Config;
+import edu.iu.dsc.tws.api.resource.IWorker;
+import edu.iu.dsc.tws.rsched.core.ResourceAllocator;
+import edu.iu.dsc.tws.rsched.job.Twister2Submitter;
+import org.twister2.perf.shuffle.tws.bigint.InputPartitionJob;
+import org.twister2.perf.shuffle.tws.bigint.MembershipJob;
+import org.twister2.perf.shuffle.tws.string.StringShuffle;
+import org.twister2.perf.shuffle.Context;
+
+import java.util.HashMap;
+import java.util.logging.Logger;
+
+public class Shuffle {
+  private static final Logger LOG = Logger.getLogger(Shuffle.class.getName());
+
+  public static void main(String[] args) {
+    Config config = ResourceAllocator.loadConfig(new HashMap<>());
+    JobConfig jobConfig = new JobConfig();
+
+    String filePrefix = args[0];
+    int parallel = Integer.parseInt(args[1]);
+    int memory = Integer.parseInt(args[2]);
+    boolean csv = Boolean.parseBoolean(args[3]);
+    boolean write = Boolean.parseBoolean(args[4]);
+    String writer = args[5];
+
+    LOG.info(String.format("Parameters file %s, parallel %d, memory %d, csv %b, write %b shuffle %s", filePrefix, parallel, memory, csv, write, writer));
+
+    jobConfig.put(Context.ARG_FILE_PREFIX, filePrefix);
+    jobConfig.put(Context.ARG_PARALLEL, parallel);
+    jobConfig.put(Context.ARG_MEMORY, memory);
+    jobConfig.put(Context.ARG_CSV, csv);
+    jobConfig.put(Context.ARG_WRITE, write);
+
+    Class<? extends IWorker> c;
+    if (writer.equals("string")) {
+      c = StringShuffle.class;
+    } else if (writer.equals("bigint")) {
+      c = InputPartitionJob.class;
+    } else {
+      throw new RuntimeException("Failed to recognize option: " + writer);
+    }
+
+    Twister2Job twister2Job;
+    twister2Job = Twister2Job.newBuilder()
+        .setJobName(MembershipJob.class.getName())
+        .setWorkerClass(c)
+        .addComputeResource(1, memory, parallel)
+        .setConfig(jobConfig)
+        .build();
+    // now submit the job
+    Twister2Submitter.submitJob(twister2Job, config);
+  }
+}

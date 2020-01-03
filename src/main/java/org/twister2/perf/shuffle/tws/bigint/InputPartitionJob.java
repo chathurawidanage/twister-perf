@@ -1,4 +1,4 @@
-package org.twister2.perf.tws;
+package org.twister2.perf.shuffle.tws.bigint;
 
 import edu.iu.dsc.tws.api.JobConfig;
 import edu.iu.dsc.tws.api.Twister2Job;
@@ -13,10 +13,10 @@ import edu.iu.dsc.tws.rsched.job.Twister2Submitter;
 import edu.iu.dsc.tws.tset.env.BatchTSetEnvironment;
 import edu.iu.dsc.tws.tset.fn.HashingPartitioner;
 import edu.iu.dsc.tws.tset.sets.batch.SinkTSet;
-import org.twister2.perf.io.CSVStreamInputReader;
 import org.twister2.perf.io.FileReader;
 import org.twister2.perf.io.StreamInputReader;
 import org.twister2.perf.io.TweetBufferedOutputWriter;
+import org.twister2.perf.shuffle.Context;
 
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -83,7 +83,7 @@ public class InputPartitionJob implements IWorker, Serializable {
         if (!csv) {
           reader = new StreamInputReader(prefix + "/data/input-" + context.getIndex(), context.getConfig());
         } else {
-          reader = new CSVStreamInputReader(prefix + "/csvData/input-" + context.getIndex(), context.getConfig());
+          reader = new BigIntReader(prefix + "/csvData/input-" + context.getIndex(), context.getConfig());
         }
       }
 

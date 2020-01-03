@@ -1,4 +1,4 @@
-package org.twister2.perf.spark;
+package org.twister2.perf.shuffle.spark.bigint;
 
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.JobConf;
