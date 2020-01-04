@@ -29,6 +29,8 @@ public class BigIntMemoryJob {
 
   private static void inMemoryShuffle(Configuration configuration, SparkConf conf, int parallel) {
     JavaSparkContext sc = new JavaSparkContext(conf);
+    conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+    conf.registerKryoClasses(new Class[]{BigInteger.class, Long.class});
     JavaPairRDD<BigInteger, Long> input = sc.newAPIHadoopRDD(configuration, BigIntInputFormat.class, BigInteger.class, Long.class);
     JavaPairRDD<BigInteger, Long> sorted = input.repartitionAndSortWithinPartitions(new HashPartitioner(parallel));
     sorted.saveAsHadoopFile("out", BigInteger.class, Long.class, EmptyOutputFormat.class);
