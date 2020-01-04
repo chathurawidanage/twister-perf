@@ -27,6 +27,8 @@ public class StringInMemoryJob {
 
   private static void inMemoryShuffle(Configuration configuration, SparkConf conf, int parallel) {
     JavaSparkContext sc = new JavaSparkContext(conf);
+    conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+    conf.registerKryoClasses(new Class[]{String.class});
     JavaPairRDD<String, String> input = sc.newAPIHadoopRDD(configuration, StringInputFormat.class, String.class, String.class);
     JavaPairRDD<String, String> sorted = input.repartitionAndSortWithinPartitions(new HashPartitioner(parallel));
     sorted.saveAsHadoopFile("out", String.class, String.class, EmptyOutputFormat.class);
