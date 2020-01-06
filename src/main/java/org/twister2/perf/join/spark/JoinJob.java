@@ -15,26 +15,26 @@ public class JoinJob {
   private final static Logger LOG = Logger.getLogger(JoinJob.class.getName());
 
   public static void main(String[] args) {
-    long t1 = System.currentTimeMillis();
     LOG.info("Starting join job....");
     SparkConf conf = new SparkConf().setAppName("join");
     conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
     conf.registerKryoClasses(new Class[]{Integer.class, Long.class});
 
     Configuration configuration = new Configuration();
-    boolean writeToFile = Boolean.parseBoolean(args[0]);
 
     JavaSparkContext sc = new JavaSparkContext(conf);
-    JavaPairRDD<Integer, Long> input1 = sc.newAPIHadoopFile(args[1], KeyValueTextInputFormat.class, Text.class, Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString())));
-    JavaPairRDD<Integer, Long> input2 = sc.newAPIHadoopFile(args[2], KeyValueTextInputFormat.class, Text.class, Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString())));
+
+    JavaPairRDD<Integer, Long> input1 = sc.newAPIHadoopFile(args[0], KeyValueTextInputFormat.class, Text.class,
+        Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString())));
+    JavaPairRDD<Integer, Long> input2 = sc.newAPIHadoopFile(args[1], KeyValueTextInputFormat.class, Text.class,
+        Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString())));
 
     JavaPairRDD<Integer, Tuple2<Long, Long>> joined = input1.join(input2);
 
-    if (writeToFile) {
+    if (args.length > 2) {
       joined.saveAsTextFile(args[3]);
     }
     sc.stop();
     LOG.info("Stopping join job...");
-    LOG.info("Time taken : " + (System.currentTimeMillis() - t1));
   }
 }
