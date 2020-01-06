@@ -32,7 +32,7 @@ public class JoinJob {
     JavaPairRDD<Integer, Tuple2<Long, Long>> joined = input1.join(input2);
 
     if (args.length > 2) {
-      joined.saveAsTextFile(args[3]);
+      joined.saveAsTextFile(args[2]);
     }
     sc.stop();
     LOG.info("Stopping join job...");
