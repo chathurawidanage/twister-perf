@@ -3,7 +3,6 @@ package org.twister2.perf.join.spark;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
-import org.apache.spark.HashPartitioner;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -37,13 +36,12 @@ public class JoinJob {
 
     LOG.info("No of Partitions of input 2 : " + input2.getNumPartitions());
 
-    //JavaPairRDD<Integer, Tuple2<Long, Long>> joined = input1.join(input2);
+    JavaPairRDD<Integer, Tuple2<Long, Long>> joined = input1.join(input2, partitions);
 
-    //LOG.info("No of Partitions of joined : " + joined.getNumPartitions());
+    LOG.info("No of Partitions of joined : " + joined.getNumPartitions());
 
     if (args.length > 3) {
-      input1.saveAsTextFile(args[3]);
-      input2.saveAsTextFile(args[3]);
+      joined.saveAsTextFile(args[3]);
     }
     sc.stop();
     LOG.info("Stopping join job...");
