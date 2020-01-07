@@ -37,12 +37,13 @@ public class JoinJob {
 
     LOG.info("No of Partitions of input 2 : " + input2.getNumPartitions());
 
-    JavaPairRDD<Integer, Tuple2<Long, Long>> joined = input1.join(input2);
+    //JavaPairRDD<Integer, Tuple2<Long, Long>> joined = input1.join(input2);
 
-    LOG.info("No of Partitions of joined : " + joined.getNumPartitions());
+    //LOG.info("No of Partitions of joined : " + joined.getNumPartitions());
 
     if (args.length > 3) {
-      joined.saveAsTextFile(args[3]);
+      input1.saveAsTextFile(args[3]);
+      input2.saveAsTextFile(args[3]);
     }
     sc.stop();
     LOG.info("Stopping join job...");
