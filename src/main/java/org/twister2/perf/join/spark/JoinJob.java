@@ -28,11 +28,18 @@ public class JoinJob {
     JavaSparkContext sc = new JavaSparkContext(conf);
 
     JavaPairRDD<Integer, Long> input1 = sc.newAPIHadoopFile(args[1], KeyValueTextInputFormat.class, Text.class,
-        Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString()))).partitionBy(new HashPartitioner(partitions));
+        Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString())));
+
+    LOG.info("No of Partitions of input 1 : " + input1.getNumPartitions());
+
     JavaPairRDD<Integer, Long> input2 = sc.newAPIHadoopFile(args[2], KeyValueTextInputFormat.class, Text.class,
-        Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString()))).partitionBy(new HashPartitioner(partitions));
+        Text.class, configuration).mapToPair((t) -> new Tuple2<>(Integer.valueOf(t._1.toString()), Long.valueOf(t._2.toString())));
+
+    LOG.info("No of Partitions of input 2 : " + input2.getNumPartitions());
 
     JavaPairRDD<Integer, Tuple2<Long, Long>> joined = input1.join(input2);
+
+    LOG.info("No of Partitions of joined : " + joined.getNumPartitions());
 
     if (args.length > 3) {
       joined.saveAsTextFile(args[3]);
