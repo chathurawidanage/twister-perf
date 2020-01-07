@@ -21,6 +21,7 @@ public class InMemoryStringShuffle implements IWorker, Serializable {
 
   @Override
   public void execute(Config config, int workerID, IWorkerController workerController, IPersistentVolume persistentVolume, IVolatileVolume volatileVolume) {
+    long start = System.currentTimeMillis();
     BatchTSetEnvironment batchEnv = BatchTSetEnvironment.initBatch(WorkerEnvironment.init(
         config, workerID, workerController, persistentVolume, volatileVolume));
     int parallel = config.getIntegerValue(Context.ARG_PARALLEL);
@@ -63,5 +64,6 @@ public class InMemoryStringShuffle implements IWorker, Serializable {
       }
     });
     batchEnv.eval(sink1);
+    LOG.info("Total time: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
   }
 }

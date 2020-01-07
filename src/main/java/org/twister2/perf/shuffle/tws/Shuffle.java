@@ -20,6 +20,7 @@ public class Shuffle {
   private static final Logger LOG = Logger.getLogger(Shuffle.class.getName());
 
   public static void main(String[] args) {
+    long start = System.currentTimeMillis();
     Config config = ResourceAllocator.loadConfig(new HashMap<>());
     JobConfig jobConfig = new JobConfig();
 
@@ -76,5 +77,6 @@ public class Shuffle {
         .build();
     // now submit the job
     Twister2Submitter.submitJob(twister2Job, config);
+    LOG.info("Total time: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
   }
 }
