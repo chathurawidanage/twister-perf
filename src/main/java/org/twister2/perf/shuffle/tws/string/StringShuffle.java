@@ -142,6 +142,7 @@ public class StringShuffle implements IWorker, Serializable {
       }
     });
     batchEnv.eval(sink1);
+    batchEnv.finishEval(sink1);
   }
 
   private static class ConsumingThread implements Runnable {

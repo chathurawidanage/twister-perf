@@ -185,5 +185,6 @@ public class MembershipJob implements IWorker, Serializable {
     });
 
     batchEnv.eval(sink);
+    batchEnv.finishEval(sink);
   }
 }
