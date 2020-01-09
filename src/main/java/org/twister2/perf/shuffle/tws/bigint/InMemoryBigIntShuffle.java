@@ -65,6 +65,7 @@ public class InMemoryBigIntShuffle implements IWorker, Serializable {
     });
     batchEnv.eval(sink1);
     batchEnv.finishEval(sink1);
+    batchEnv.close();
     LOG.info("Total time: " + (System.currentTimeMillis() - start) / 1000 + " seconds");
   }
 }
