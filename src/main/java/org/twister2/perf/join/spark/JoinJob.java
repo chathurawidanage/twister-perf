@@ -6,6 +6,7 @@ import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.twister2.perf.shuffle.io.EmptyOutputFormat;
 import scala.Tuple2;
 
 import java.util.logging.Logger;
@@ -42,6 +43,8 @@ public class JoinJob {
 
     if (args.length > 3) {
       joined.saveAsTextFile(args[3]);
+    } else {
+      joined.saveAsHadoopFile("out", byte[].class, byte[].class, EmptyOutputFormat.class);
     }
     sc.stop();
     LOG.info("Stopping join job...");

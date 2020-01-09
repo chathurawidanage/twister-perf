@@ -122,6 +122,10 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
           } catch (IOException iex) {
             LOG.log(Level.SEVERE, "Failed to write to file", iex);
           }
+        } else {
+          while (values.hasNext()) {
+            JoinedTuple<Integer, Long, Long> next = values.next();
+          }
         }
         return true;
       }
