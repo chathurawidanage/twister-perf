@@ -9,15 +9,13 @@ import edu.iu.dsc.tws.api.comms.structs.Tuple;
 import edu.iu.dsc.tws.api.tset.TSetContext;
 import edu.iu.dsc.tws.api.tset.fn.BaseSinkFunc;
 import edu.iu.dsc.tws.api.tset.fn.MapFunc;
+import edu.iu.dsc.tws.api.tset.fn.PartitionFunc;
 import edu.iu.dsc.tws.data.utils.HdfsDataContext;
 import edu.iu.dsc.tws.rsched.job.Twister2Submitter;
 import edu.iu.dsc.tws.tset.env.BatchTSetEnvironment;
-import edu.iu.dsc.tws.tset.fn.HashingPartitioner;
 import edu.iu.dsc.tws.tset.links.batch.JoinTLink;
 import edu.iu.dsc.tws.tset.sets.batch.KeyedSourceTSet;
-import edu.iu.dsc.tws.tset.sets.batch.KeyedTSet;
 import edu.iu.dsc.tws.tset.sets.batch.SinkTSet;
-import edu.iu.dsc.tws.tset.sets.batch.SourceTSet;
 import edu.iu.dsc.tws.tset.worker.BatchTSetIWorker;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -25,7 +23,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
 
 import java.io.*;
-import java.util.Iterator;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -60,21 +58,38 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
     int parallelism = env.getConfig().getIntegerValue(CONFIG_PARALLELISM);
 
     LOG.info("Creating sources...");
-    SourceTSet<Tuple<Integer, Long>> source1 = env.createHadoopSource(configuration1,
+    KeyedSourceTSet<Integer, Long> source1 = env.createKeyedHadoopSource(configuration1,
         KeyValueTextInputFormat.class, parallelism,
         (MapFunc<Tuple<Integer, Long>, Tuple<Text, Text>>) input ->
             Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString())));
 
-    SourceTSet<Tuple<Integer, Long>> source2 = env.createHadoopSource(configuration2,
+    KeyedSourceTSet<Integer, Long> source2 = env.createKeyedHadoopSource(configuration2,
         KeyValueTextInputFormat.class, parallelism, (MapFunc<Tuple<Integer, Long>, Tuple<Text, Text>>) input ->
             Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString())));
 
-    KeyedTSet<Integer, Long> keyedTSet1 = source1.mapToTuple(input -> input);
-    KeyedTSet<Integer, Long> keyedTSet2 = source2.mapToTuple(input -> input);
-
     LOG.info("Joining...");
-    JoinTLink<Integer, Long, Long> joined = keyedTSet1.join(keyedTSet2,
-        CommunicationContext.JoinType.INNER, null, new HashingPartitioner<>())
+    JoinTLink<Integer, Long, Long> joined = source1.join(source2,
+        CommunicationContext.JoinType.INNER, null, new PartitionFunc<Integer>() {
+
+          List<Integer> dests;
+
+
+          @Override
+          public void prepare(Set<Integer> sources, Set<Integer> destinations) {
+            this.dests = new ArrayList<>(destinations);
+            Collections.sort(this.dests);
+          }
+
+          @Override
+          public int partition(int sourceIndex, Integer val) {
+            return dests.get(val % dests.size());
+          }
+
+          @Override
+          public void commit(int source, int partition) {
+
+          }
+        })
         .useDisk().useHashAlgorithm(MessageTypes.INTEGER);
 
     SinkTSet<Iterator<JoinedTuple<Integer, Long, Long>>> sink = joined.sink(new BaseSinkFunc<Iterator<JoinedTuple<Integer, Long, Long>>>() {
@@ -95,6 +110,9 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
         if (this.writeToFile) {
           try (BufferedWriter bufferedWriter = new BufferedWriter(
               new FileWriter(new File(this.fileName)))) {
+            if (!values.hasNext()) {
+              LOG.info("Nothing to write...");
+            }
             while (values.hasNext()) {
               JoinedTuple<Integer, Long, Long> next = values.next();
               bufferedWriter.write(String.format("(%d)(%d,%d)", next.getKey(),
