@@ -115,7 +115,7 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
             }
             while (values.hasNext()) {
               JoinedTuple<Integer, Long, Long> next = values.next();
-              bufferedWriter.write(String.format("(%d)(%d,%d)", next.getKey(),
+              bufferedWriter.write(String.format("(%d,(%d,%d))", next.getKey(),
                   next.getLeftValue(), next.getRightValue()));
               bufferedWriter.newLine();
             }
