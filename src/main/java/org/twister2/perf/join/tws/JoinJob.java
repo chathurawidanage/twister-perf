@@ -82,7 +82,7 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
 
           @Override
           public int partition(int sourceIndex, Integer val) {
-            return dests.get(val % dests.size());
+            return dests.get(Math.abs(val) % dests.size());
           }
 
           @Override
