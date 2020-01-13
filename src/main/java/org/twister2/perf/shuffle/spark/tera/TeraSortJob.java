@@ -23,7 +23,8 @@ public class TeraSortJob {
     configuration.set(Context.ARG_PARALLEL, args[1]);
     configuration.set(Context.ARG_KEY_SIZE, args[2]);
     configuration.set(Context.ARG_DATA_SIZE, args[3]);
-
+    conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
+    conf.registerKryoClasses(new Class[]{byte[].class});
 
     JavaSparkContext sc = new JavaSparkContext(conf);
     JavaPairRDD<byte[], byte[]> input = sc.newAPIHadoopRDD(configuration, ByteInputFormat.class, byte[].class, byte[].class);
