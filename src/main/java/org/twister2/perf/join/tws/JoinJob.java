@@ -40,6 +40,9 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
   private static final String CONFIG_INPUT1_PATH = "CONFIG_INPUT1_PATH";
   private static final String CONFIG_INPUT2_PATH = "CONFIG_INPUT2_PATH";
 
+  private static final String CONFIG_ALGO = "CONFIG_ALGO";
+  private static final String CONFIG_DISK = "CONFIG_DISK";
+
   @Override
   public void execute(BatchTSetEnvironment env) {
     LOG.info("Starting execution....");
@@ -89,8 +92,15 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
           public void commit(int source, int partition) {
 
           }
-        })
-        .useDisk().useHashAlgorithm(MessageTypes.INTEGER);
+        });
+
+    if (env.getConfig().getBooleanValue(CONFIG_DISK)) {
+      joined.useDisk();
+    }
+
+    if (env.getConfig().getStringValue(CONFIG_ALGO).equals("hash")) {
+      joined.useHashAlgorithm(MessageTypes.INTEGER);
+    }
 
     SinkTSet<Iterator<JoinedTuple<Integer, Long, Long>>> sink = joined.sink(new BaseSinkFunc<Iterator<JoinedTuple<Integer, Long, Long>>>() {
 
@@ -142,6 +152,9 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
     jobConfig.put(CONFIG_INPUT2_PATH, args[3]);
     jobConfig.put(CONFIG_WRITE_TO_FILE, Boolean.parseBoolean(args[4]));
     jobConfig.put(CONFIG_OUT_PATH, args[5]);
+
+    jobConfig.put(CONFIG_ALGO, args[6]);
+    jobConfig.put(CONFIG_DISK, Boolean.parseBoolean(args[7]));
 
     Twister2Job job = Twister2Job.newBuilder().setJobName("join-job")
         .setWorkerClass(JoinJob.class)
