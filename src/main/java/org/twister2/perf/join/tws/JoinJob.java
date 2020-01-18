@@ -133,13 +133,12 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
             LOG.log(Level.SEVERE, "Failed to write to file", iex);
           }
         } else {
-          long t1 = System.currentTimeMillis();
           long count = 0;
           while (values.hasNext()) {
             JoinedTuple<Integer, Long, Long> next = values.next();
             count++;
           }
-          LOG.info("Join performed in " + (System.currentTimeMillis() - t1) + " and produced " + count);
+          LOG.info("Join performed and produced " + count);
         }
         return true;
       }
