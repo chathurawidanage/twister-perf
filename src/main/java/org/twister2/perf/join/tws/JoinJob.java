@@ -69,38 +69,6 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
         KeyValueTextInputFormat.class, parallelism, (MapFunc<Tuple<Integer, Long>, Tuple<Text, Text>>) input ->
             Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString())));
 
-    source1.keyedDirect().compute(new BaseComputeCollectorFunc<Object, Iterator<Tuple<Integer, Long>>>() {
-      @Override
-      public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
-        long count = 0;
-        while (input.hasNext()) {
-          input.next();
-          count++;
-        }
-        output.collect(count);
-      }
-    }).direct().forEach(count -> {
-      LOG.info("Source 1 had : " + count);
-    });
-
-    source2.keyedDirect().compute(new BaseComputeCollectorFunc<Object, Iterator<Tuple<Integer, Long>>>() {
-      @Override
-      public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
-        long count = 0;
-        while (input.hasNext()) {
-          input.next();
-          count++;
-        }
-        output.collect(count);
-      }
-    }).direct().forEach(count -> {
-      LOG.info("Source 2 had : " + count);
-    });
-
-    if (1 == 1) {
-      return;
-    }
-
     LOG.info("Joining...");
     JoinTLink<Integer, Long, Long> joined = source1.join(source2,
         CommunicationContext.JoinType.INNER, new KeyComparator<Integer>() {
