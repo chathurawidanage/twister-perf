@@ -35,8 +35,8 @@ public class WritingJob implements IWorker {
 
     Twister2Job twister2Job;
     twister2Job = Twister2Job.newBuilder()
-        .setJobName(org.twister2.perf.shuffle.tws.bigint.WritingJob.class.getName())
-        .setWorkerClass(org.twister2.perf.shuffle.tws.bigint.WritingJob.class)
+        .setJobName(WritingJob.class.getName())
+        .setWorkerClass(WritingJob.class)
         .addComputeResource(1, memory, parallel)
         .setConfig(jobConfig)
         .build();
