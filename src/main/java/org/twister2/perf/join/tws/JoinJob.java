@@ -72,7 +72,12 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
 
     LOG.info("Joining...");
     JoinTLink<Integer, Long, Long> joined = source1.join(source2,
-        CommunicationContext.JoinType.INNER, null, new PartitionFunc<Integer>() {
+        CommunicationContext.JoinType.INNER, new Comparator<Integer>() {
+          @Override
+          public int compare(Integer t1, Integer t2) {
+            return t1 - t2;
+          }
+        }, new PartitionFunc<Integer>() {
 
           List<Integer> dests;
 
