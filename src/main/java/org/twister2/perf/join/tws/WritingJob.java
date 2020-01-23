@@ -26,7 +26,7 @@ public class WritingJob implements IWorker {
     String filePrefix = args[0];
     int parallel = Integer.parseInt(args[1]);
     int memory = Integer.parseInt(args[2]);
-    long tuples = Long.parseLong(args[4]) / parallel;
+    long tuples = Long.parseLong(args[3]) / parallel;
 
     JobConfig jobConfig = new JobConfig();
 
