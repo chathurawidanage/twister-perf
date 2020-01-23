@@ -1,5 +1,6 @@
 package org.twister2.perf.join.tws;
 
+import com.sun.jersey.core.util.KeyComparator;
 import edu.iu.dsc.tws.api.JobConfig;
 import edu.iu.dsc.tws.api.Twister2Job;
 import edu.iu.dsc.tws.api.comms.CommunicationContext;
@@ -7,9 +8,7 @@ import edu.iu.dsc.tws.api.comms.messaging.types.MessageTypes;
 import edu.iu.dsc.tws.api.comms.structs.JoinedTuple;
 import edu.iu.dsc.tws.api.comms.structs.Tuple;
 import edu.iu.dsc.tws.api.tset.TSetContext;
-import edu.iu.dsc.tws.api.tset.fn.BaseSinkFunc;
-import edu.iu.dsc.tws.api.tset.fn.MapFunc;
-import edu.iu.dsc.tws.api.tset.fn.PartitionFunc;
+import edu.iu.dsc.tws.api.tset.fn.*;
 import edu.iu.dsc.tws.data.utils.HdfsDataContext;
 import edu.iu.dsc.tws.rsched.job.Twister2Submitter;
 import edu.iu.dsc.tws.tset.env.BatchTSetEnvironment;
@@ -70,9 +69,54 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
         KeyValueTextInputFormat.class, parallelism, (MapFunc<Tuple<Integer, Long>, Tuple<Text, Text>>) input ->
             Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString())));
 
+    source1.keyedDirect().compute(new BaseComputeCollectorFunc<Object, Iterator<Tuple<Integer, Long>>>() {
+      @Override
+      public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
+        long count = 0;
+        while (input.hasNext()) {
+          count++;
+        }
+        output.collect(count);
+      }
+    }).direct().forEach(count -> {
+      LOG.info("Source 1 had : " + count);
+    });
+
+    source2.keyedDirect().compute(new BaseComputeCollectorFunc<Object, Iterator<Tuple<Integer, Long>>>() {
+      @Override
+      public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
+        long count = 0;
+        while (input.hasNext()) {
+          count++;
+        }
+        output.collect(count);
+      }
+    }).direct().forEach(count -> {
+      LOG.info("Source 2 had : " + count);
+    });
+
+    if (1 == 1) {
+      return;
+    }
+
     LOG.info("Joining...");
     JoinTLink<Integer, Long, Long> joined = source1.join(source2,
-        CommunicationContext.JoinType.INNER, null, new PartitionFunc<Integer>() {
+        CommunicationContext.JoinType.INNER, new KeyComparator<Integer>() {
+          @Override
+          public boolean equals(Integer integer, Integer k1) {
+            return integer.equals(k1);
+          }
+
+          @Override
+          public int hash(Integer integer) {
+            return integer.hashCode();
+          }
+
+          @Override
+          public int compare(Integer integer, Integer t1) {
+            return integer.compareTo(t1);
+          }
+        }, new PartitionFunc<Integer>() {
 
           List<Integer> dests;
 
@@ -134,11 +178,13 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
           }
         } else {
           long count = 0;
+          long t1 = System.currentTimeMillis();
           while (values.hasNext()) {
             JoinedTuple<Integer, Long, Long> next = values.next();
             count++;
           }
-          LOG.info("Join performed and produced " + count);
+          LOG.info("Join performed and produced " + count + " iteration took : "
+              + (System.currentTimeMillis() - t1));
         }
         return true;
       }
