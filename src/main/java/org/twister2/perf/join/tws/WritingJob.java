@@ -19,8 +19,12 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WritingJob implements IWorker {
+  private static final Logger LOG = Logger.getLogger(WritingJob.class.getName());
+
   public static void main(String[] args) {
     Config config = ResourceAllocator.loadConfig(new HashMap<>());
     String filePrefix = args[0];
@@ -67,7 +71,7 @@ public class WritingJob implements IWorker {
       br1.close();
       br2.close();
     } catch (Exception ex) {
-      System.out.println("Error in generating " + workerID);
+      LOG.log(Level.INFO,"Error in generating " + workerID, ex);
     }
   }
 }
