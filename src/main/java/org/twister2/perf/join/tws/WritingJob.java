@@ -67,6 +67,7 @@ public class WritingJob implements IWorker {
       br1.close();
       br2.close();
     } catch (Exception ex) {
+      ex.printStackTrace();
       System.out.println("Error in generating " + workerID);
     }
   }
