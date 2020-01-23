@@ -53,8 +53,8 @@ public class WritingJob implements IWorker {
     Random random = new Random(System.nanoTime());
     try {
       FileSystem fs = FileSystemUtils.get(new Path(fileName).toUri(), config);
-      FSDataOutputStream out1 = fs.create(new Path(fileName + "/in1/" + workerID));
-      FSDataOutputStream out2 = fs.create(new Path(fileName + "/in2/" + workerID));
+      FSDataOutputStream out1 = fs.create(new Path(fileName + "/in1/" + recordsPerRelation + "/" + workerID));
+      FSDataOutputStream out2 = fs.create(new Path(fileName + "/in2/" + recordsPerRelation + "/" + workerID));
 
       BufferedWriter br1 = new BufferedWriter(new OutputStreamWriter(out1));
       BufferedWriter br2 = new BufferedWriter(new OutputStreamWriter(out2));
