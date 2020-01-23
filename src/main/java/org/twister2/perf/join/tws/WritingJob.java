@@ -36,7 +36,7 @@ public class WritingJob implements IWorker {
 
     jobConfig.put(Context.ARG_FILE_PREFIX, filePrefix);
     jobConfig.put(Context.ARG_TUPLES, tuples);
-    jobConfig.put("FOLDER", Long.parseLong(args[3]));
+    jobConfig.put("FOLDER", args[3]);
 
     Twister2Job twister2Job;
     twister2Job = Twister2Job.newBuilder()
