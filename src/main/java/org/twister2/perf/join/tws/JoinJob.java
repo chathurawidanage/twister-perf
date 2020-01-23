@@ -74,6 +74,7 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
       public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
         long count = 0;
         while (input.hasNext()) {
+          input.next();
           count++;
         }
         output.collect(count);
@@ -87,6 +88,7 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
       public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
         long count = 0;
         while (input.hasNext()) {
+          input.next();
           count++;
         }
         output.collect(count);
