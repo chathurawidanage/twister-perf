@@ -82,8 +82,6 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
         KeyValueTextInputFormat.class, parallelism, (MapFunc<Tuple<Integer, Long>, Tuple<Text, Text>>) input ->
             Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString()))).withSchema(schema);
 
-            Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString())));
-
     LOG.info("Joining...");
     JoinTLink<Integer, Long, Long> joined = source1.join(source2,
         CommunicationContext.JoinType.INNER, Integer::compareTo, new PartitionFunc<Integer>() {
