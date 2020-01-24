@@ -1,12 +1,23 @@
 package org.twister2.perf.util;
 
+import edu.iu.dsc.tws.api.config.Config;
+import edu.iu.dsc.tws.api.data.FileSystem;
+import edu.iu.dsc.tws.api.resource.IPersistentVolume;
+import edu.iu.dsc.tws.api.resource.IVolatileVolume;
+import edu.iu.dsc.tws.api.resource.IWorker;
+import edu.iu.dsc.tws.api.resource.IWorkerController;
+import edu.iu.dsc.tws.data.hdfs.HadoopFileSystem;
+import edu.iu.dsc.tws.data.utils.HdfsDataContext;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 
-public class JoinDataGenerator {
+public class JoinDataGenerator implements IWorker {
   public static void main(String[] args) throws IOException {
     int recordsPerRelation = Integer.parseInt(args[0]);
     int nodes = Integer.parseInt(args[1]);
@@ -26,5 +37,15 @@ public class JoinDataGenerator {
       br1.close();
       br2.close();
     }
+  }
+
+  @Override
+  public void execute(Config config, int workerID, IWorkerController workerController,
+                      IPersistentVolume persistentVolume, IVolatileVolume volatileVolume) {
+
+    Configuration configuration1 = new Configuration();
+    configuration1.addResource(
+        new Path(HdfsDataContext.getHdfsConfigDirectory(config)));
+    //FileSystem fs = new HadoopFileSystem();
   }
 }

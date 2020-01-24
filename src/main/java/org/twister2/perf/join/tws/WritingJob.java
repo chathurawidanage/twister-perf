@@ -36,7 +36,7 @@ public class WritingJob implements IWorker {
 
     jobConfig.put(Context.ARG_FILE_PREFIX, filePrefix);
     jobConfig.put(Context.ARG_TUPLES, tuples);
-    jobConfig.put("FOLDER", args[3]);
+    jobConfig.put("WORKERS", Long.parseLong(args[3]));
 
     Twister2Job twister2Job;
     twister2Job = Twister2Job.newBuilder()
@@ -53,14 +53,15 @@ public class WritingJob implements IWorker {
   public void execute(Config config, int workerID, IWorkerController workerController, IPersistentVolume persistentVolume, IVolatileVolume volatileVolume) {
     long recordsPerRelation = config.getLongValue(Context.ARG_TUPLES, 1000);
     String fileName = config.getStringValue(Context.ARG_FILE_PREFIX);
-    String folder = config.getStringValue("FOLDER");
-    int randomRange = recordsPerRelation > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) recordsPerRelation;
+    long workers = config.getLongValue("WORKERS", 80);
+    int randomRange = recordsPerRelation * workers > Integer.MAX_VALUE ?
+        Integer.MAX_VALUE : (int) (recordsPerRelation * workers);
     System.out.println("Generating " + recordsPerRelation + " tuples per node...");
     Random random = new Random(System.nanoTime());
     try {
       FileSystem fs = FileSystemUtils.get(new Path(fileName).toUri(), config);
-      FSDataOutputStream out1 = fs.create(new Path(fileName + "/in1/" + folder + "/" + workerID));
-      FSDataOutputStream out2 = fs.create(new Path(fileName + "/in2/" + folder + "/" + workerID));
+      FSDataOutputStream out1 = fs.create(new Path(fileName + "/in1/" + workers + "/" + workerID));
+      FSDataOutputStream out2 = fs.create(new Path(fileName + "/in2/" + workers + "/" + workerID));
 
       BufferedWriter br1 = new BufferedWriter(new OutputStreamWriter(out1));
       BufferedWriter br2 = new BufferedWriter(new OutputStreamWriter(out2));
