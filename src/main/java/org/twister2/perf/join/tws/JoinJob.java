@@ -1,15 +1,14 @@
 package org.twister2.perf.join.tws;
 
-import com.sun.jersey.core.util.KeyComparator;
 import edu.iu.dsc.tws.api.JobConfig;
 import edu.iu.dsc.tws.api.Twister2Job;
 import edu.iu.dsc.tws.api.comms.CommunicationContext;
-import edu.iu.dsc.tws.api.comms.messaging.types.MessageType;
 import edu.iu.dsc.tws.api.comms.messaging.types.MessageTypes;
 import edu.iu.dsc.tws.api.comms.structs.JoinedTuple;
 import edu.iu.dsc.tws.api.comms.structs.Tuple;
 import edu.iu.dsc.tws.api.tset.TSetContext;
 import edu.iu.dsc.tws.api.tset.fn.*;
+import edu.iu.dsc.tws.api.tset.schema.KeyedSchema;
 import edu.iu.dsc.tws.api.tset.schema.TupleSchema;
 import edu.iu.dsc.tws.data.utils.HdfsDataContext;
 import edu.iu.dsc.tws.rsched.job.Twister2Submitter;
@@ -62,16 +61,7 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
     int parallelism = env.getConfig().getIntegerValue(CONFIG_PARALLELISM);
 
     LOG.info("Creating sources...");
-    TupleSchema schema = new TupleSchema() {
-      @Override
-      public MessageType getKeyType() {
-        return MessageTypes.INTEGER;
-      }
-      @Override
-      public MessageType getDataType() {
-        return MessageTypes.LONG;
-      }
-    };
+    TupleSchema schema = new KeyedSchema(MessageTypes.INTEGER, MessageTypes.LONG);
 
     KeyedSourceTSet<Integer, Long> source1 = env.createKeyedHadoopSource(configuration1,
         KeyValueTextInputFormat.class, parallelism,
