@@ -4,11 +4,13 @@ import com.sun.jersey.core.util.KeyComparator;
 import edu.iu.dsc.tws.api.JobConfig;
 import edu.iu.dsc.tws.api.Twister2Job;
 import edu.iu.dsc.tws.api.comms.CommunicationContext;
+import edu.iu.dsc.tws.api.comms.messaging.types.MessageType;
 import edu.iu.dsc.tws.api.comms.messaging.types.MessageTypes;
 import edu.iu.dsc.tws.api.comms.structs.JoinedTuple;
 import edu.iu.dsc.tws.api.comms.structs.Tuple;
 import edu.iu.dsc.tws.api.tset.TSetContext;
 import edu.iu.dsc.tws.api.tset.fn.*;
+import edu.iu.dsc.tws.api.tset.schema.TupleSchema;
 import edu.iu.dsc.tws.data.utils.HdfsDataContext;
 import edu.iu.dsc.tws.rsched.job.Twister2Submitter;
 import edu.iu.dsc.tws.tset.env.BatchTSetEnvironment;
@@ -60,46 +62,25 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
     int parallelism = env.getConfig().getIntegerValue(CONFIG_PARALLELISM);
 
     LOG.info("Creating sources...");
+    TupleSchema schema = new TupleSchema() {
+      @Override
+      public MessageType getKeyType() {
+        return MessageTypes.INTEGER;
+      }
+      @Override
+      public MessageType getDataType() {
+        return MessageTypes.LONG;
+      }
+    };
+
     KeyedSourceTSet<Integer, Long> source1 = env.createKeyedHadoopSource(configuration1,
         KeyValueTextInputFormat.class, parallelism,
         (MapFunc<Tuple<Integer, Long>, Tuple<Text, Text>>) input ->
-            Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString())));
+            Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString()))).withSchema(schema);
 
     KeyedSourceTSet<Integer, Long> source2 = env.createKeyedHadoopSource(configuration2,
         KeyValueTextInputFormat.class, parallelism, (MapFunc<Tuple<Integer, Long>, Tuple<Text, Text>>) input ->
-            Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString())));
-
-    source1.keyedDirect().compute(new BaseComputeCollectorFunc<Object, Iterator<Tuple<Integer, Long>>>() {
-      @Override
-      public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
-        long count = 0;
-        while (input.hasNext()) {
-          input.next();
-          count++;
-        }
-        output.collect(count);
-      }
-    }).direct().forEach(count -> {
-      LOG.info("Source 1 had : " + count);
-    });
-
-    source2.keyedDirect().compute(new BaseComputeCollectorFunc<Object, Iterator<Tuple<Integer, Long>>>() {
-      @Override
-      public void compute(Iterator<Tuple<Integer, Long>> input, RecordCollector<Object> output) {
-        long count = 0;
-        while (input.hasNext()) {
-          input.next();
-          count++;
-        }
-        output.collect(count);
-      }
-    }).direct().forEach(count -> {
-      LOG.info("Source 2 had : " + count);
-    });
-
-    if (1 == 1) {
-      return;
-    }
+            Tuple.of(Integer.parseInt(input.getKey().toString()), Long.parseLong(input.getValue().toString()))).withSchema(schema);
 
     LOG.info("Joining...");
     JoinTLink<Integer, Long, Long> joined = source1.join(source2,
@@ -145,7 +126,7 @@ public class JoinJob implements BatchTSetIWorker, Serializable {
     }
 
     if (env.getConfig().getStringValue(CONFIG_ALGO).equals("hash")) {
-      joined.useHashAlgorithm(MessageTypes.INTEGER);
+      joined.useHashAlgorithm();
     }
 
     SinkTSet<Iterator<JoinedTuple<Integer, Long, Long>>> sink = joined.sink(new BaseSinkFunc<Iterator<JoinedTuple<Integer, Long, Long>>>() {
