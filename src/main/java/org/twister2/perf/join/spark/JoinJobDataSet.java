@@ -48,15 +48,12 @@ public class JoinJobDataSet {
         Encoders.tuple(Encoders.INT(), Encoders.LONG())).toDF("key", "value");
 
     Dataset<Row> join = ds1.alias("ds1").join(ds2.alias("ds2"), ds1.col("key")
-        .equalTo(ds2.col("key")), "inner").select("ds1.key", "ds1.value", "ds2.value");
+        .equalTo(ds2.col("key")), "inner");
 
     if (args.length > 3) {
       join.write().text(args[3]);
     } else {
       LOG.info("Total join tuples : "+join.count());
-      join.foreach(r -> {
-
-      });
     }
     sc.stop();
     LOG.info("Stopping join job...");
