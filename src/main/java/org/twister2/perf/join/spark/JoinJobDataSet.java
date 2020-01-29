@@ -46,7 +46,8 @@ public class JoinJobDataSet {
     Dataset<Row> ds2 = sqlContext.createDataset(JavaPairRDD.toRDD(input2),
         Encoders.tuple(Encoders.INT(), Encoders.LONG())).toDF("key", "value");
 
-    Dataset<Row> join = ds1.join(ds2, ds1.col("key").equalTo(ds2.col("key")), "inner");
+    Dataset<Row> join = ds1.alias("ds1").join(ds2.alias("ds2"), ds1.col("key")
+        .equalTo(ds2.col("key")), "inner").select("ds1.key", "ds1.value", "ds2.value");
 
     if (args.length > 3) {
       join.write().text(args[3]);
