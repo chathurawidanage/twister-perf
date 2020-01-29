@@ -24,7 +24,7 @@ public class TeraSortPartitioner extends Partitioner implements Serializable {
 
   @Override
   public int getPartition(Object key) {
-    LOG.info("Partition with key size: " + ((byte[]) key).length);
+    LOG.finest("Partition with key size: " + ((byte[]) key).length);
     return partition((byte[]) key);
   }
 
