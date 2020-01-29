@@ -10,7 +10,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SQLContext;
-import org.twister2.perf.shuffle.io.EmptyOutputFormat;
 import scala.Tuple2;
 
 import java.util.logging.Logger;
@@ -47,7 +46,7 @@ public class JoinJobDataSet {
     Dataset<Row> ds2 = sqlContext.createDataset(JavaPairRDD.toRDD(input2),
         Encoders.tuple(Encoders.INT(), Encoders.LONG())).toDF("key", "value");
 
-    Dataset<Row> join = ds1.join(ds2);
+    Dataset<Row> join = ds1.join(ds2, ds1.col("key").equalTo(ds2.col("key")), "inner");
 
     if (args.length > 3) {
       join.write().text(args[3]);
