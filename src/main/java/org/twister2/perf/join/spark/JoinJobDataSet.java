@@ -53,7 +53,9 @@ public class JoinJobDataSet {
     if (args.length > 3) {
       join.write().text(args[3]);
     } else {
-      LOG.info("Total join tuples : "+join.count());
+      join.foreach(r -> {
+
+      });
     }
     sc.stop();
     LOG.info("Stopping join job...");
