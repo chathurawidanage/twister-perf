@@ -40,7 +40,7 @@ parallel=$workers
 keySize=10
 dataSize=90
 writeToFile=false
-totalData=$(echo $dataSizePerWorkerGB*$workers | bc -l )
+totalData=$(echo $dataSizePerWorkerGB $workers | awk '{print $1 * $2}' )
 
 ${SPARK_HOME}/bin/spark-submit \
     --master "${K8S_MASTER}" \
