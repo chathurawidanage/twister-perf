@@ -14,6 +14,7 @@ dataSizePerWorkerGB=$2
 
 jobName=j1
 workerCPU=1.0
+mem=4g
 
 #uploadMethod=s3
 uploadMethod=pod
@@ -48,14 +49,14 @@ ${SPARK_HOME}/bin/spark-submit \
     --name "${jobName}" \
     --class org.twister2.perf.shuffle.spark.tera.TeraSortJob \
     --conf spark.driver.memory=2g \
-    --conf spark.executor.memory=3g \
+    --conf spark.executor.memory=${mem} \
     --conf spark.executor.instances=${workers} \
     --conf spark.kubernetes.container.image=auyar/spark:v${sparkv} \
     --conf spark.kubernetes.authenticate.driver.serviceAccountName=spark \
     --conf spark.kubernetes.executor.request.cores=${workerCPU} \
     --conf spark.kubernetes.executor.limit.cores=${workerCPU} \
     --conf spark.kubernetes.allocation.batch.size=${workers} \
-    --conf spark.memory.fraction=0.4 \
+    --conf spark.memory.fraction=0.3 \
     $url \
     $dataSizePerWorkerGB $parallel $keySize $dataSize $writeToFile
 
@@ -79,8 +80,8 @@ kubectl logs ${driver} >> ${logFile}
 echo written logs to: ${logFile}
 delayLine=$(grep SortingDelay ${logFile})
 delay=${delayLine##* }
-echo -e "${driver}\t${workers}\t${totalData}\t${delay}" >> $outFile
-echo -e "${driver}\t${workers}\t${totalData}\t${delay}"
+echo -e "${driver}\t${mem}\t${workers}\t${totalData}\t${delay}" >> $outFile
+echo -e "${driver}\t${mem}\t${workers}\t${totalData}\t${delay}"
 
 echo deleting driver pod and the associated service
 ./kill-spark-tera.sh $driver

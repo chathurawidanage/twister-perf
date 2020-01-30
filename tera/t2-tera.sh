@@ -15,7 +15,7 @@ cp -f conf/network.yaml ${T2_HOME}/conf/common/
 # total data size for all workers in GB
 workers=$1
 dataSizePerWorker=$2
-totalData=$( echo $dataSizePerWorker*$workers | bc -l)
+totalData=$( echo $dataSizePerWorker $workers | awk '{print $1 * $2}')
 
 ${T2_HOME}/bin/twister2 submit kubernetes jar ${T2_HOME}/examples/libexamples-java.jar \
   edu.iu.dsc.tws.examples.batch.terasort.TeraSort \
@@ -61,8 +61,8 @@ echo saved the log file to: ${logFile}
 trimmedLine=$(echo $delayLine | awk '{$1=$1};1' )
 delay=${trimmedLine##* }
 
-echo -e "${workers}\t${totalData}\t${delay}" >> $outFile
-echo -e "${workers}\t${totalData}\t${delay}"
+echo -e "${jobID}\t${workers}\t${totalData}\t${delay}" >> $outFile
+echo -e "${jobID}\t${workers}\t${totalData}\t${delay}"
 
 # kill the job
 ${T2_HOME}/bin/twister2 kill kubernetes $jobID
