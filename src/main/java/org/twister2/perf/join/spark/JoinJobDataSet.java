@@ -48,17 +48,15 @@ public class JoinJobDataSet {
         Encoders.tuple(Encoders.INT(), Encoders.LONG())).toDF("key", "value");
 
     Dataset<Row> join = ds1.alias("ds1").join(ds2.alias("ds2"), ds1.col("key")
-        .equalTo(ds2.col("key")), "inner").select();
+        .equalTo(ds2.col("key")), "inner");
 
     if (args.length > 3) {
       join.write().text(args[3]);
     } else {
       join.foreach(r -> {
-        System.out.println(r.size());
-        System.out.println(r.schema());
-//        Integer key = r.getInt(0);
-//        Long v1 = r.getLong(2);
-//        Long v2 = r.getLong(3);
+        Integer key = r.getInt(0);
+        Long v1 = r.getLong(2);
+        Long v2 = r.getLong(3);
       });
     }
     sc.stop();
